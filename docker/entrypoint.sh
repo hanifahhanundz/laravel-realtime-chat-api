@@ -1,11 +1,21 @@
 #!/bin/bash
 set -e
 
-echo "Running migrations..."
-php artisan migrate --force --no-ansi
+# For local dev: run migrations and start services
+# For production: use environment variables to determine mode
 
-echo "Starting Reverb WebSocket server..."
-php artisan reverb:start --host=0.0.0.0 --port=8080 &
+if [ "$APP_ENV" = "production" ]; then
+    echo "Running production migrations..."
+    php artisan migrate --force --no-ansi
 
-echo "Starting supervisor services (nginx + php-fpm)..."
+    if [ "$BROADCAST_CONNECTION" = "reverb" ]; then
+        echo "Starting Reverb WebSocket server..."
+        php artisan reverb:start --host=0.0.0.0 --port=8080 &
+    fi
+else
+    echo "Running local migrations..."
+    php artisan migrate --no-ansi
+fi
+
+echo "Starting services..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

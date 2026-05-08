@@ -5,13 +5,14 @@ ENV TZ=UTC
 
 RUN apk add --no-cache \
     postgresql-dev \
+    sqlite-dev \
     linux-headers \
     $PHPIZE_DEPS \
     nginx \
     supervisor \
     curl \
     fcgi \
-    && docker-php-ext-install pdo pdo_pgsql pdo_mysql \
+    && docker-php-ext-install pdo pdo_pgsql pdo_sqlite \
     && pecl install redis > /dev/null 2>&1 || true \
     && docker-php-ext-enable redis \
     && rm -rf /var/cache/apk/*
@@ -29,10 +30,8 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail
 # Copy application
 COPY . .
 
-# Build Laravel
-RUN php artisan config:cache 2>&1 | tail -3 \
-    && php artisan route:cache 2>&1 | tail -3 \
-    || true
+# NOTE: Do NOT run config:cache or route:cache here.
+# .env is mounted at runtime and those commands need a valid app key.
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
