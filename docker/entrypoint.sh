@@ -2,11 +2,10 @@
 set -e
 
 echo "Running migrations..."
-php artisan migrate --force
+php artisan migrate --force --no-ansi
 
-# Reverb start in background
-echo "Starting Reverb..."
-php artisan reverb:start --host=0.0.0.0 &
+echo "Starting Reverb WebSocket server..."
+php artisan reverb:start --host=0.0.0.0 --port=8080 &
 
-echo "Starting services..."
+echo "Starting supervisor services (nginx + php-fpm)..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
