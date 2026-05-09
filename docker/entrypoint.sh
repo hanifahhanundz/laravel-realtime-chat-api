@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+# Create supervisor log directory
+mkdir -p /var/log/supervisor
+
 # Ensure writable directories exist with correct permissions
 chown -R www-data:www-data /var/www/html/database
 chown -R www-data:www-data /var/www/html/storage
