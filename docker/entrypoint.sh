@@ -1,11 +1,16 @@
 #!/bin/sh
 set -e
 
+# Ensure writable directories exist with correct permissions
+chown -R www-data:www-data /var/www/html/database
+chown -R www-data:www-data /var/www/html/storage
+chown -R www-data:www-data /var/www/html/bootstrap/cache
+
 # Ensure SQLite database file exists
 if [ "$DB_CONNECTION" = "sqlite" ]; then
     mkdir -p /var/www/html/database
     touch /var/www/html/database/database.sqlite
-    chmod 666 /var/www/html/database/database.sqlite
+    chown www-data:www-data /var/www/html/database/database.sqlite
 fi
 
 if [ "$APP_ENV" = "production" ]; then

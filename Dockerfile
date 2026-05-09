@@ -12,6 +12,7 @@ RUN apk add --no-cache \
     supervisor \
     curl \
     fcgi \
+    bash \
     && docker-php-ext-install pdo pdo_pgsql pdo_sqlite \
     && pecl install redis > /dev/null 2>&1 || true \
     && docker-php-ext-enable redis \
@@ -30,11 +31,14 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail
 # Copy application
 COPY . .
 
-# NOTE: Do NOT run config:cache or route:cache here.
-# .env is mounted at runtime and those commands need a valid app key.
-
-# Permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Set directory permissions for www-data user
+RUN mkdir -p /var/www/html/database && \
+    chown -R www-data:www-data /var/www/html/database && \
+    chown -R www-data:www-data /var/www/html/storage && \
+    chown -R www-data:www-data /var/www/html/bootstrap/cache && \
+    chmod -R 775 /var/www/html/database && \
+    chmod -R 775 /var/www/html/storage && \
+    chmod -R 775 /var/www/html/bootstrap/cache
 
 # Supervisor config
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
