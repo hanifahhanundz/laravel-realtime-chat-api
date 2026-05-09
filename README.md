@@ -1,33 +1,46 @@
 # Laravel Realtime Chat API
 
-> Real-time chat backend built with Laravel 13, Reverb WebSocket, and PostgreSQL.
+![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?style=flat&logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?style=flat&logo=php&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-336791?style=flat&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-Upstash-DC382D?style=flat&logo=redis&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Alpine-2496ED?style=flat&logo=docker&logoColor=white)
+![Railway](https://img.shields.io/badge/Railway-Deployment-000000?style=flat&logo=railway&logoColor=white)
 
-## Tech Stack
+**Live API:** [https://laravel-realtime-chat-api-production.up.railway.app/api](https://laravel-realtime-chat-api-production.up.railway.app/api)
 
-**Backend:** Laravel 13 · PHP 8.4 · Reverb WebSocket · Sanctum API Auth
-
-**Database:** PostgreSQL (Neon) · Redis (Upstash)
-
-**Infrastructure:** Docker · Railway · Alpine Linux
+> Real-time chat backend built with Laravel 13, Reverb WebSocket, PostgreSQL (Neon), and Redis (Upstash).
 
 ## Architecture
 
 ```
 ┌─────────────┐      ┌─────────────────┐      ┌──────────────┐
-│ Vue 3 FE    │──────│ Laravel API      │──────│ PostgreSQL   │
-│ (Netlify)   │ HTTPS│ (Railway)        │      │ (Neon)       │
+│  Vue 3 FE   │──────│  Laravel API    │──────│  PostgreSQL │
+│  (Netlify)  │ HTTPS│  (Railway)      │      │  (Neon)     │
 └─────────────┘      └────────┬────────┘      └──────────────┘
-                              │ WebSocket
-                    ┌─────────▼──────────┐
-                    │ Reverb Server     │
-                    │ (Laravel Reverb)  │
-                    └─────────┬──────────┘
-                              │ Pub/Sub
-                    ┌─────────▼──────────┐
-                    │ Redis             │
-                    │ (Upstash)         │
-                    └───────────────────┘
+                               │ WebSocket
+                     ┌─────────▼──────────┐
+                     │  Reverb Server    │
+                     │  (Laravel Reverb) │
+                     └─────────┬──────────┘
+                               │ Pub/Sub
+                     ┌─────────▼──────────┐
+                     │  Redis            │
+                     │  (Upstash)        │
+                     └───────────────────┘
 ```
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Laravel 13 (PHP 8.4) |
+| Auth | Laravel Sanctum (API tokens) |
+| WebSocket | Laravel Reverb |
+| Database | PostgreSQL (Neon) |
+| Cache / PubSub | Redis (Upstash) |
+| Container | Docker (Alpine Linux) |
+| Hosting | Railway |
 
 ## API Endpoints
 
@@ -65,9 +78,9 @@ laravel-realtime-chat-api/
 │   └── Models/           # User, Room, Message
 ├── database/
 │   ├── factories/        # RoomFactory, MessageFactory
-│   └── migrations/        # rooms, room_participants, messages
+│   └── migrations/       # rooms, room_participants, messages
 ├── routes/
-│   ├── api.php           # REST API routes
+│   ├── api.php          # REST API routes
 │   └── channels.php      # Private channel authorization
 ├── docker/               # Dockerfile, nginx.conf, entrypoint.sh
 ├── Dockerfile
@@ -79,19 +92,11 @@ laravel-realtime-chat-api/
 ### Local Development
 
 ```bash
-# Install dependencies
 composer install
-
-# Setup environment
 cp .env.example .env
 php artisan key:generate
 php artisan migrate
-
-# Start server
 php artisan serve
-
-# Start WebSocket server (separate terminal)
-php artisan reverb:start
 ```
 
 ### Docker
@@ -108,11 +113,11 @@ php artisan test
 
 ## Deployment
 
-**Railway** (Backend API + WebSocket)
+**Railway** (Backend API)
 
 1. Connect GitHub repo → Railway auto-deploys
 2. Add Neon PostgreSQL → copy connection string to Railway env vars
-3. Add Redis → set `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`
+3. Add Upstash Redis → set `REDIS_URL`
 4. Set env vars: `APP_ENV=production`, `BROADCAST_CONNECTION=reverb`, `REVERB_*`
 5. Start command: `/entrypoint.sh`
 
