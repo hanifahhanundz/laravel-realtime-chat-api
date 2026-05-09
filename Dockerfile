@@ -31,8 +31,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail
 # Copy application (AFTER composer install so vendor layer is cached)
 COPY . .
 
-# Patch Reverb PHP 8.4 SIGINT compatibility (global constants deprecated, use \PCNTL_*)
-RUN sed -i 's/\[PCNTL_SIGINT, PCNTL_SIGTERM, PCNTL_SIGTSTP]/[\\PCNTL_SIGINT, \\PCNTL_SIGTERM, \\PCNTL_SIGTSTP]/' \
+RUN sed -i 's/\[SIGINT, SIGTERM, SIGTSTP]/[\\SIGINT, \\SIGTERM, \\SIGTSTP]/' \
     /var/www/html/vendor/laravel/reverb/src/Servers/Reverb/Console/Commands/StartServer.php 2>/dev/null || true
 
 # Set directory permissions for www-data user
