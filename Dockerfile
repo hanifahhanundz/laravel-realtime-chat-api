@@ -44,7 +44,7 @@ RUN mkdir -p /var/www/html/database && \
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Nginx config
-COPY docker/nginx.conf /etc/nginx/sites-available/default
+COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 
 # Entrypoint
 COPY docker/entrypoint.sh /entrypoint.sh
