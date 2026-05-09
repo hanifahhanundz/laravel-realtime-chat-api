@@ -9,7 +9,6 @@ RUN apk add --no-cache \
     linux-headers \
     $PHPIZE_DEPS \
     nginx \
-    supervisor \
     curl \
     fcgi \
     bash \
@@ -26,22 +25,22 @@ WORKDIR /var/www/html
 # Copy composer files first for caching
 COPY composer.json composer.lock* ./
 
+# Install dependencies FIRST (before application code)
 RUN composer install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail -3
 
-# Copy application
+# Copy application (AFTER composer install so vendor layer is cached)
 COPY . .
+
+# Patch Reverb PHP 8.4 SIGINT compatibility (global constants deprecated, use PCNTL_*)
+RUN sed -i 's/\[SIGINT, SIGTERM, SIGTSTP]/[PCNTL_SIGINT, PCNTL_SIGTERM, PCNTL_SIGTSTP]/' \
+    /var/www/html/vendor/laravel/reverb/src/Servers/Reverb/Console/Commands/StartServer.php 2>/dev/null || true
 
 # Set directory permissions for www-data user
 RUN mkdir -p /var/www/html/database && \
-    chown -R www-data:www-data /var/www/html/database && \
     chown -R www-data:www-data /var/www/html/storage && \
     chown -R www-data:www-data /var/www/html/bootstrap/cache && \
-    chmod -R 775 /var/www/html/database && \
     chmod -R 775 /var/www/html/storage && \
     chmod -R 775 /var/www/html/bootstrap/cache
-
-# Supervisor config
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Nginx config
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
