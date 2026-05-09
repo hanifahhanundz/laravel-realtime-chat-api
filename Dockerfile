@@ -12,7 +12,7 @@ RUN apk add --no-cache \
     curl \
     fcgi \
     bash \
-    && docker-php-ext-install pdo pdo_pgsql pdo_sqlite \
+    && docker-php-ext-install pdo pdo_pgsql pdo_sqlite pcntl \
     && pecl install redis > /dev/null 2>&1 || true \
     && docker-php-ext-enable redis \
     && rm -rf /var/cache/apk/*
@@ -31,9 +31,6 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail
 # Copy application (AFTER composer install so vendor layer is cached)
 COPY . .
 
-# Patch Reverb PHP 8.4 SIGINT: add backslash prefix for global namespace
-RUN sed -i 's/\[SIGINT, SIGTERM, SIGTSTP]/[\\SIGINT, \\SIGTERM, \\SIGTSTP]/' \
-    /var/www/html/vendor/laravel/reverb/src/Servers/Reverb/Console/Commands/StartServer.php 2>/dev/null || true
 
 # Set directory permissions for www-data user
 RUN mkdir -p /var/www/html/database && \
