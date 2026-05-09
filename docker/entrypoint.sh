@@ -1,8 +1,11 @@
 #!/bin/sh
 set -e
 
-# For local dev: run migrations and start services
-# For production: use environment variables to determine mode
+# Ensure SQLite database file exists
+if [ "$DB_CONNECTION" = "sqlite" ]; then
+    mkdir -p /var/www/html/database
+    touch /var/www/html/database/database.sqlite
+fi
 
 if [ "$APP_ENV" = "production" ]; then
     echo "Running production migrations..."
