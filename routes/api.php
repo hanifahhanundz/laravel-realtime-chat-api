@@ -17,6 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Rooms
     Route::get('/rooms', [RoomController::class, 'index']);
+    Route::get('/rooms/available', [RoomController::class, 'available']);
     Route::post('/rooms', [RoomController::class, 'store']);
     Route::get('/rooms/{room}', [RoomController::class, 'show']);
     Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);

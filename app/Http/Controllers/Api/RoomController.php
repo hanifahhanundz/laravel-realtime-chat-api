@@ -20,6 +20,20 @@ class RoomController extends Controller
         return response()->json($rooms);
     }
 
+    public function available(Request $request): JsonResponse
+    {
+        $rooms = Room::whereNotIn('id', function ($query) use ($request) {
+            $query->select('room_id')
+                ->from('room_participants')
+                ->where('user_id', $request->user()->id);
+        })
+            ->with(['owner', 'participants'])
+            ->latest()
+            ->paginate(20);
+
+        return response()->json($rooms);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
