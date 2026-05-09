@@ -31,6 +31,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail
 # Copy application (AFTER composer install so vendor layer is cached)
 COPY . .
 
+# Patch Reverb PHP 8.4 SIGINT: add backslash prefix for global namespace
 RUN sed -i 's/\[SIGINT, SIGTERM, SIGTSTP]/[\\SIGINT, \\SIGTERM, \\SIGTSTP]/' \
     /var/www/html/vendor/laravel/reverb/src/Servers/Reverb/Console/Commands/StartServer.php 2>/dev/null || true
 
