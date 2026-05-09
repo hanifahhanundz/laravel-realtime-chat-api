@@ -20,6 +20,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/rooms', [RoomController::class, 'store']);
     Route::get('/rooms/{room}', [RoomController::class, 'show']);
     Route::delete('/rooms/{room}', [RoomController::class, 'destroy']);
+    Route::post('/rooms/{room}/join', [RoomController::class, 'join']);
+    Route::post('/rooms/{room}/leave', [RoomController::class, 'leave']);
 
     // Messages
     Route::get('/rooms/{room}/messages', [MessageController::class, 'index']);

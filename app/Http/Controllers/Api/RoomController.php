@@ -73,4 +73,25 @@ class RoomController extends Controller
 
         return response()->json(['message' => 'Room deleted']);
     }
+
+    public function join(Request $request, Room $room): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($room->participants()->where('user_id', $user->id)->exists()) {
+            return response()->json(['message' => 'Already a participant']);
+        }
+
+        $room->participants()->attach($user->id, ['joined_at' => now()]);
+
+        return response()->json(['message' => 'Joined room']);
+    }
+
+    public function leave(Request $request, Room $room): JsonResponse
+    {
+        $user = $request->user();
+        $room->participants()->detach($user->id);
+
+        return response()->json(['message' => 'Left room']);
+    }
 }
