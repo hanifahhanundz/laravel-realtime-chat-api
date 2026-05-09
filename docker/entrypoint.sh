@@ -5,6 +5,7 @@ set -e
 if [ "$DB_CONNECTION" = "sqlite" ]; then
     mkdir -p /var/www/html/database
     touch /var/www/html/database/database.sqlite
+    chmod 666 /var/www/html/database/database.sqlite
 fi
 
 if [ "$APP_ENV" = "production" ]; then
