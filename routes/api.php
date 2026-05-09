@@ -3,11 +3,17 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\RoomController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 // Public auth routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Broadcasting auth (for Echo/Pusher)
+Route::post('/broadcasting/auth', function () {
+    return Broadcast::auth(request());
+})->middleware('auth:sanctum');
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
